@@ -1,5 +1,5 @@
 import java.util.ArrayList;
-public class universidad {
+public class universidad{
     private String nombre;
     private String direccion;
     private ArrayList<carrera> carreras;
@@ -9,12 +9,14 @@ public class universidad {
     private profesor p;
     private personal e;
     private int i;
-    public universidad(String nombre,String direccion){
+    private IndiceEstudiante legajo;
+    public universidad(String nombre,String direccion,int tamanio){
         setNombre(nombre);
         setDireccion(direccion);
         this.carreras=new ArrayList<>();
         this.profesor=new ArrayList<>();
         this.empleados=new ArrayList<>();
+        this.legajo=new IndiceEstudiante(tamanio);
     }
 
     public String getNombre(){
@@ -72,6 +74,17 @@ public class universidad {
         return empleados;
     }
 
+    public void agregarLegajo(String clave, Estudiante e) {
+        legajo.insertar(clave, e);
+    }
+
+    public Estudiante buscarLegajo(String clave) {
+        return legajo.buscar(clave);
+    }
+
+    public void mostrarLegajos() {
+        legajo.mostrar();
+    }
     public void mostrar(){
         System.out.println("universidad: " + nombre + ", direccion: " + direccion );
         System.out.println("carreras:");

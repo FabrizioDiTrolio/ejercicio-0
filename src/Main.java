@@ -29,13 +29,17 @@ public class Main {
         String direccion;
         String puesto;
         String fecha;
+        ArrayList<carrera> carreras=new ArrayList<>();
         ArrayList<Materias> todas=new ArrayList<>();
         ArrayList<profesor> profe=new ArrayList<>();
         ArrayList<personal> empleados=new ArrayList<>();
         universidad univ;
         String alumnoBuscado;
         Estudiante encontrado;
-        Estudiante[] alumnos;
+        Estudiante []alumnos;
+        int alumnos_carrera;
+        String clave;
+        String claveaencontrar;
         try{
             do{
         System.out.println("ingrese el nombre de la universidad");
@@ -45,12 +49,12 @@ public class Main {
         System.out.println("ingrese la direccion");
         direccion=sc.nextLine();
             }while(direccion.isEmpty());
-        univ=new universidad(nombre, direccion);
         do{
             System.out.println("ingrese la cantidad de carreras");
             cantcarreras=sc.nextInt();
             sc.nextLine();
         }while(cantcarreras<=0);
+        cantalumnos=0;
         for(i=0; i<cantcarreras; i++){
             do{
             System.out.println("ingrese el nombre de la carrera");
@@ -61,15 +65,26 @@ public class Main {
             codigoCarrera=sc.nextLine();
             }while(codigoCarrera.isEmpty());
             c=new carrera(nombre, codigoCarrera);
-            univ.agregarCarrera(c);
             do{
                 System.out.println("ingrese la cantidad de alumnos");
-                cantalumnos=sc.nextInt();
+                alumnos_carrera=sc.nextInt();
                 sc.nextLine();
-            }while(cantalumnos<=0);
+            }while(alumnos_carrera<=0);
+            cantalumnos=cantalumnos+alumnos_carrera;
+            carreras.add(c);
+        }
+        univ=new universidad(nombre, direccion,cantalumnos);
             alumnos=new Estudiante[cantalumnos];
-            for(j=0;j<cantalumnos;j++){
-                System.out.println("alumno " + (j+1) + ":");
+            for(i=0;i<carreras.size();i++){
+                c=carreras.get(i);
+                univ.agregarCarrera(c);
+                for(j=0;j<c.getEstudiantes().size();j++){
+                System.out.println("alumno " + (i+1) + ":");
+                do{
+                    System.out.println("ingrese el legajo");
+                    clave=sc.nextLine().trim();
+                }while(clave.isEmpty());
+                univ.agregarLegajo(clave, alumnos[i]);
                 do{
                     System.out.println("nombre:");
                     nombre= sc.nextLine(); //trim elimina espacios en blanco al inicio y al final
@@ -87,7 +102,8 @@ public class Main {
                     System.out.println("documento:");
                     documento= sc.nextLine(); //trim elimina espacios en blanco al inicio y al final
                 }while(documento.isEmpty());
-                alumnos[j]=new Estudiante(nombre,apellido,edad,documento,c);
+                alumnos[i]=new Estudiante(nombre, apellido, edad, documento, c, clave);
+                c.agregarEstudiante(alumnos[i]);
                 do{
                     System.out.println("ingrese la cantidad de materias (>0)");
                     cantmaterias=sc.nextInt();
@@ -119,112 +135,122 @@ public class Main {
             }
         }
         do{
-                System.out.println("ingrese la cantidad de profesores a agregar");
-                cantprofesores=sc.nextInt();
-                sc.nextLine();
-            }while(cantprofesores<=0);
-            for(i=0;i<cantprofesores;i++){
-                System.out.println("profesor"+ (i+1) + ":");
-                do{
+            System.out.println("ingrese la cantidad de profesores a agregar");
+            cantprofesores=sc.nextInt();
+            sc.nextLine();
+        }while(cantprofesores<=0);
+        for(i=0;i<cantprofesores;i++){
+            System.out.println("profesor"+ (i+1) + ":");
+            do{
                 System.out.println("nombre:");
                 nombre=sc.nextLine();
-                }while(nombre.isEmpty());
+            }while(nombre.isEmpty());
+            do{
+                System.out.println("apellido:");
+                apellido=sc.nextLine();
+            }while(apellido.isEmpty());
+            do{
+                System.out.println("edad:");
+                edad=sc.nextInt();
+                sc.nextLine();
+            }while(edad<16);
+            do{
+                System.out.println("documento");
+                documento=sc.nextLine();
+            }while(documento.isEmpty());
+            do{
+                System.out.println("especialidad");
+                especialidad=sc.nextLine();
+            }while(especialidad.isEmpty());
+            do{
+                System.out.println("puesto:");
+                experiencia=sc.nextInt();
+                sc.nextLine();
+            }while(experiencia<0);
+            prof=new profesor(nombre, apellido, edad, documento, especialidad, experiencia);
+            profe.add(prof);
+            do{
+                System.out.println("ingrese la cantidad de materias a asignar");
+                cantasignadas=sc.nextInt();
+                sc.nextLine();
+            }while(cantasignadas<=0);
+            for(j=0;j<cantasignadas;j++){
                 do{
-                    System.out.println("apellido:");
-                    apellido=sc.nextLine();
-                }while(apellido.isEmpty());
-                do{
-                    System.out.println("edad:");
-                    edad=sc.nextInt();
-                    sc.nextLine();
-                }while(edad<16);
-                do{
-                    System.out.println("documento");
-                    documento=sc.nextLine();
-                }while(documento.isEmpty());
-                 do{
-                    System.out.println("especialidad");
-                    especialidad=sc.nextLine();
-                }while(especialidad.isEmpty());
-                do{
-                    System.out.println("puesto:");
-                    experiencia=sc.nextInt();
-                    sc.nextLine();
-                }while(experiencia<0);
-                prof=new profesor(nombre, apellido, edad, documento, especialidad, experiencia);
-                profe.add(prof);
-                do{
-                    System.out.println("ingrese la cantidad de materias a asignar");
-                    cantasignadas=sc.nextInt();
-                    sc.nextLine();
-                }while(cantasignadas<=0);
-                for(j=0;j<cantasignadas;j++){
                     do{
-                        do{
                         System.out.println("ingrese el nombre de la materia "+ (j+1));
                         nombre=sc.nextLine().trim();
-                        }while(nombre.isEmpty());
-                        encontrada=null;
-                        for(k=0;k<todas.size();k++){
-                            mat=todas.get(k);
-                            if(mat.getNombre().equalsIgnoreCase(nombre)){
-                                encontrada=mat;
-                                break;
-                            }
+                    }while(nombre.isEmpty());
+                    encontrada=null;
+                    for(k=0;k<todas.size();k++){
+                        mat=todas.get(k);
+                        if(mat.getNombre().equalsIgnoreCase(nombre)){
+                            encontrada=mat;
+                            break;
                         }
-                        if(encontrada!=null){
-                            prof.agregarMateria(encontrada);
-                            encontrada.agregarProfesor(prof);
-                            System.out.println("se asigno la materia");
-                        }else{
-                            System.out.println("no se ha encontrado la materia");
-                        }
-                    }while(encontrada==null);
-                }
+                    }
+                    if(encontrada!=null){
+                        prof.agregarMateria(encontrada);
+                        encontrada.agregarProfesor(prof);
+                        System.out.println("se asigno la materia");
+                    }else{
+                        System.out.println("no se ha encontrado la materia");
+                    }
+                }while(encontrada==null);
             }
+        }
+        do{
+            System.out.println("ingrese la cantidad de personal a agregar");
+            cantpersonal=sc.nextInt();
+            sc.nextLine();
+        }while(cantpersonal<=0);
+        for(i=0;i<cantpersonal;i++){
+            System.out.println("personal"+ (i+1) + ":");
             do{
-                System.out.println("ingrese la cantidad de personal a agregar");
-                cantpersonal=sc.nextInt();
-                sc.nextLine();
-            }while(cantpersonal<=0);
-            for(i=0;i<cantpersonal;i++){
-                System.out.println("personal"+ (i+1) + ":");
-                do{
                 System.out.println("nombre:");
                 nombre=sc.nextLine();
-                }while(nombre.isEmpty());
-                do{
-                    System.out.println("apellido:");
-                    apellido=sc.nextLine();
-                }while(apellido.isEmpty());
-                do{
-                    System.out.println("edad:");
-                    edad=sc.nextInt();
-                    sc.nextLine();
-                }while(edad<16);
-                do{
-                    System.out.println("documento");
-                    documento=sc.nextLine();
-                }while(documento.isEmpty());
-                 do{
-                    System.out.println("departamento/casa:");
-                    direccion=sc.nextLine();
-                }while(direccion.isEmpty());
-                do{
-                    System.out.println("puesto:");
-                    puesto=sc.nextLine();
-                }while(puesto.isEmpty());
-                do{
-                    System.out.println("ingrese la fecha de ingreso (dd/mm/yy)");
-                    fecha=sc.nextLine();
-                }while(fecha.isEmpty());
-                pers=new personal(nombre, apellido, edad, documento, direccion,puesto,fecha);
-                empleados.add(pers);
-            }
+            }while(nombre.isEmpty());
+            do{
+                System.out.println("apellido:");
+                apellido=sc.nextLine();
+            }while(apellido.isEmpty());
+            do{
+                System.out.println("edad:");
+                edad=sc.nextInt();
+                sc.nextLine();
+            }while(edad<16);
+            do{
+                System.out.println("documento");
+                documento=sc.nextLine();
+            }while(documento.isEmpty());
+            do{
+                System.out.println("departamento/casa:");
+                direccion=sc.nextLine();
+            }while(direccion.isEmpty());
+            do{
+                System.out.println("puesto:");
+                puesto=sc.nextLine();
+            }while(puesto.isEmpty());
+            do{
+                System.out.println("ingrese la fecha de ingreso (dd/mm/yy)");
+                fecha=sc.nextLine();
+            }while(fecha.isEmpty());
+            pers=new personal(nombre, apellido, edad, documento, direccion,puesto,fecha);
+            empleados.add(pers);
+        }
         univ.mostrar();
+        univ.mostrarLegajos();
         System.out.println("ingrese un nombre de un alumno a buscar");
         alumnoBuscado=sc.nextLine().trim();
         encontrado=buscarAlumno(univ, alumnoBuscado);
+        if (encontrado!=null) {
+            System.out.println("se encontro al alumno");
+            encontrado.mostrarEstudiante();
+        }else{
+            System.out.println("no se encontro al alumno");
+        }
+        System.out.println("ingrese el legajo de un alumno a buscar");
+        claveaencontrar=sc.nextLine().trim();
+        encontrado=univ.buscarLegajo(claveaencontrar);
         if (encontrado!=null) {
             System.out.println("se encontro al alumno");
             encontrado.mostrarEstudiante();
@@ -248,7 +274,7 @@ public class Main {
                 if (e.getNombre().equalsIgnoreCase(nombreAlumno)) {
                     return e;
                 }else{
-                    
+                    System.out.println("no se ha encontrado al alumno");
                 }
             }
         }
